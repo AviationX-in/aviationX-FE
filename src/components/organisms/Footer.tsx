@@ -3,7 +3,7 @@ const Footer = () => {
     return new Date().getFullYear();
   };
   return (
-    <div className="bg-primary text-primary-foreground">
+    <div className="bg-blue-500 text-primary-foreground">
       <div className="w-[90%] mx-auto flex justify-between items-start py-4">
         <div className="">
           <h1 className="text-lg font-bold">AviationX.in</h1>
