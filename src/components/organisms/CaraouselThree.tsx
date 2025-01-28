@@ -23,7 +23,7 @@ export function CarouselThree() {
   return (
     <div className="w-full py-6 bg-gray-50">
       {/* Heading */}
-      <h2 className="text-3xl font-bold text-center text-primary mb-6">AviationX BEST SELLERS</h2>
+      <h2 className="text-3xl font-bold text-center mb-6 text-blue-600">AviationX BEST SELLERS</h2>
       {/* Carousel */}
       <div className="w-full max-w-6xl mx-auto">
         <Carousel className="relative">

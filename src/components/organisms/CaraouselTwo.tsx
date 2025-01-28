@@ -24,7 +24,7 @@ export function CarouselTwo() {
   return (
     <div className="w-full py-6 bg-gray-50">
       {/* Heading */}
-      <h2 className="text-3xl font-bold text-center text-primary mb-6">Explore the Products</h2>
+      <h2 className="text-3xl font-bold text-center  mb-6 text-blue-600">Explore the Products</h2>
       {/* Carousel */}
       <div className="w-full max-w-6xl mx-auto cursor-pointer">
         <Carousel className="relative">

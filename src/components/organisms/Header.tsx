@@ -18,7 +18,7 @@ const Header = () => {
       <div className="w-[90%] mx-auto flex justify-between items-center py-4">
         <div>
           <Link to="/" className="text-2xl font-bold text-blue-600">
-            AviationHub
+            AviationX
           </Link>
         </div>
 
