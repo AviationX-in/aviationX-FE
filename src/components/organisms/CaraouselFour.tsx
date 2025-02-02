@@ -1,25 +1,25 @@
 import { brands } from '@/utils/data/product';
-import Shopbybrand from './Shopbybrand';
 
 export function CarouselFour() {
   return (
-    <section className="container mx-auto px-4 mb-12">
-      <h2 className="text-3xl font-bold mb-6 text-blue-600 text-center">Shop by Brand</h2>
-      <Shopbybrand
-        items={brands.map((brand, index) => (
-          <div key={index} className="p-4">
-            <img
-              src={brand.image || '/placeholder.svg'}
-              alt={brand.name}
-              width={200}
-              height={100}
-              className="w-full h-auto object-contain"
-            />
-            <p className="text-center mt-2">{brand.name}</p>
+    <div className="mb-12 mt-9">
+      <h2 className="text-3xl font-bold mb-6 text-primary text-center ">Shop by Brand</h2>
+      <section className="flex flex-wrap container mx-auto px-4 gap-8 justify-center">
+        {brands.map((brand, index) => (
+          <div key={index} className="flex flex-col items-center gap-3">
+            <div className="w-32 h-32 rounded-full overflow-hidden border border-black bg-white shadow-sm hover:shadow-md transition-shadow border-b">
+              <div className="w-full h-full relative">
+                <img
+                  src={brand.image || '/placeholder.svg'}
+                  alt={brand.name}
+                  className="absolute inset-0 w-full h-full object-center "
+                />
+              </div>
+            </div>
+            <p className="text-sm font-medium text-gray-700">{brand.name}</p>
           </div>
         ))}
-        itemsPerSlide={4}
-      />
-    </section>
+      </section>
+    </div>
   );
 }

@@ -1,5 +1,4 @@
-import bannerImg1 from '../../assets/bannerImg/bannerImg1.jpg';
-import bannerImg2 from '../../assets/bannerImg/bannerImg2.jpg';
+
 
 type Producttype = {
   id: number;
@@ -43,10 +42,10 @@ export const categories2 = [
 ];
 
 export const brands = [
-  { name: 'Brand 1', image: bannerImg1 },
-  { name: 'Brand 2', image: bannerImg2 },
-  { name: 'Brand 3', image: bannerImg1 },
-  { name: 'Brand 4', image: bannerImg2 },
-  { name: 'Brand 5', image: bannerImg1 },
-  { name: 'Brand 6', image: bannerImg2 },
+  { name: 'PPG', image: 'https://purepng.com/public/uploads/large/purepng.com-ppg-logologobrand-logoiconslogos-251519940583bib8o.png' },
+  { name: 'AeroShell', image: 'https://th.bing.com/th/id/OIP.KEPfAitfB1yah7gT5ltj6QHaHa?w=178&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7' },
+  { name: 'Eastman', image: "https://www.eastman.com/content/experience-fragments/eastman-corporate/us/en/mega_menu/level_1/header/master/_jcr_content/root/header/headcontainer/headernavcont/image.coreimg.png/1722201436857/updated-eastman-logo-black.png" },
+  { name: 'Mobil', image: 'https://www.mobil.co.in/-/media/optimized-images/webp-optimized-image/logo.webp' },
+  { name: 'LPS', image: 'https://th.bing.com/th/id/OIP.Hmj3QuQy7v-aT7-77CpW7gHaGV?rs=1&pid=ImgDetMain' },
+  { name: 'Molykote', image: 'https://www.dupont.com/content/dam/dupont/amer/us/en/Molykote/public/images/icons-logos/MOLYKOTE_R_logo_rgb1.svg' },
 ];
