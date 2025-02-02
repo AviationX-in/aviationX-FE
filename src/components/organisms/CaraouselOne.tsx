@@ -10,17 +10,23 @@ const CaraouselOne = () => {
   const timeout = useRef<NodeJS.Timeout | null>(null);
 
   const handelLeft = () => {
-    clearTimeout(timeout.current);
+    if (timeout.current !== null) {
+      clearTimeout(timeout.current);
+    }
     setCurrentSlide(currentslide > 0 ? currentslide - 1 : bannerImages.length - 1);
   };
 
   const handleRight = () => {
-    clearTimeout(timeout.current);
+    if (timeout.current !== null) {
+      clearTimeout(timeout.current);
+    }
     setCurrentSlide(currentslide < bannerImages.length - 1 ? currentslide + 1 : 0);
   };
 
   const handleDots = (idx: number) => {
-    clearTimeout(timeout.current);
+    if (timeout.current !== null) {
+      clearTimeout(timeout.current);
+    }
     setCurrentSlide(idx);
   };
 
@@ -32,7 +38,7 @@ const CaraouselOne = () => {
     };
     changeBannerImg();
     return () => {
-      clearTimeout(timeout);
+      clearTimeout(timeout.current as NodeJS.Timeout);
     };
   }, [currentslide, bannerImages.length]);
 
@@ -51,7 +57,7 @@ const CaraouselOne = () => {
       </div>
 
       <div className="absolute bottom-0 left-[50%] translate-x-[-50%] flex justify-center gap-2 py-4 cursor-pointer">
-        {bannerImages.map((item, idx) => (
+        {bannerImages.map((_, idx) => (
           <div
             key={idx}
             className={`rounded-full h-3 w-3 ${idx === currentslide ? 'bg-white' : 'bg-red-200'}`}
