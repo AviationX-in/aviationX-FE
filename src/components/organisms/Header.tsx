@@ -3,9 +3,9 @@ import { Link } from 'react-router';
 import { Input } from '../atoms/Input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../molecules/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '../molecules/popover';
+import { categories } from '@/utils/data/product';
 
 const Header = () => {
-  const categories = ['Oil', 'Oil and Grease', 'Aviation', 'Waste'];
   return (
     <div>
       {/* Main Header */}
@@ -26,10 +26,10 @@ const Header = () => {
             <ul className="space-y-2">
               {categories.map((category) => (
                 <li
-                  key={category}
+                  key={category.name}
                   className="p-2 text-sm cursor-pointer hover:bg-gray-200 rounded-md"
                 >
-                  {category}
+                  {category.name}
                 </li>
               ))}
             </ul>
