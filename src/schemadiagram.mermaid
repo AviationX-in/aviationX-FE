@@ -1,0 +1,93 @@
+erDiagram
+    users ||--o{ orders : places
+    users ||--o{ cart : has
+    users ||--o{ wishlist : has
+    users ||--o{ payments : makes
+
+    categories ||--o{ products : contains
+
+    products ||--o{ cart : "listed in"
+    products ||--o{ wishlist : "saved in"
+    products ||--o{ order_items : "included in"
+
+    orders ||--|{ order_items : contains
+    orders ||--|| shipping : has
+    orders ||--|| payments : has
+
+    users {
+        int id PK
+        string name
+        string email
+        string password_hash
+        string phone
+        string address
+        string role
+        timestamp created_at
+    }
+
+    categories {
+        int id PK
+        string name
+        string description
+    }
+
+    products {
+        int id PK
+        string name
+        string description
+        string sku
+        decimal price
+        int stock_quantity
+        int category_id FK
+        string manufacturer
+        timestamp created_at
+    }
+
+    wishlist {
+        int id PK
+        int user_id FK
+        int product_id FK
+        timestamp added_at
+    }
+
+    cart {
+        int id PK
+        int user_id FK
+        int product_id FK
+        int quantity
+        timestamp added_at
+    }
+
+    orders {
+        int id PK
+        int user_id FK
+        decimal total_price
+        string status
+        timestamp created_at
+    }
+
+    order_items {
+        int id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+        decimal price
+    }
+
+    payments {
+        int id PK
+        int order_id FK
+        int user_id FK
+        decimal amount
+        string payment_status
+        timestamp created_at
+    }
+
+    shipping {
+        int id PK
+        int order_id FK
+        string tracking_number
+        string carrier
+        date estimated_delivery
+        string status
+    }

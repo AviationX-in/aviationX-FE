@@ -1,17 +1,15 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import { Button } from "./components/atom/button";
+import { Routes, Route } from 'react-router';
+import Homepage from './components/pages/Homepage';
+import ProductPage from './components/pages/Productdetails';
 
-function App() {
-    const [count, setCount] = useState(0);
-
-    return (
-        <>
-            <Button variant={"destructive"}>Hello</Button>
-        </>
-    );
-}
-
+const App = () => {
+  return (
+    <>
+      <Routes>
+        <Route index element={<Homepage />} />
+        <Route path="/product/details" element={<ProductPage />} />
+      </Routes>
+    </>
+  );
+};
 export default App;
