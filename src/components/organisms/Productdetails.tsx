@@ -1,178 +1,164 @@
 import { useState } from 'react';
-import { Button } from '../atoms/Button';
-import { Clock, DollarSign, Plane, Star, Users } from 'lucide-react';
-import { Card, CardContent } from '../molecules/Card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../molecules/select';
+import { useEffect } from 'react';
+import { useParams } from 'react-router';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../molecules/tabs';
+import { Card, CardContent } from '../molecules/Card';
+import { Button } from '../atoms/Button';
+import Header from './Header';
 
-interface Review {
-  id: number;
-  author: string;
-  rating: number;
-  date: string;
-  content: string;
+interface Manufacturer {
+  name: string;
 }
 
-interface ProductDetailsProps {
+interface Category {
   name: string;
+}
+
+interface Product {
+  id: string;
+  sku: string;
+  partNumber: string;
+  productName: string;
   description: string;
   price: number;
-  mainImage: string;
-  generalInfo: { [key: string]: string };
-  specifications: { [key: string]: string };
-  reviews: Review[];
+  quantity: number;
+  packSize: string;
+  shelfLife: string;
+  thumbnail: string;
+  image: string[];
+  Manufacturer: Manufacturer;
+  Category: Category;
 }
 
-export function ProductDetails({
-  name,
-  description,
-  price,
-  mainImage,
-  generalInfo,
-  specifications,
-  reviews: initialReviews,
-}: ProductDetailsProps) {
-  const [selectedImage] = useState(mainImage);
-  const [reviews, setReviews] = useState(initialReviews);
+export function ProductDetails() {
+  const { id } = useParams();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [selectedImage, setSelectedImage] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const sortReviews = (criteria: string) => {
-    const sortedReviews = [...reviews];
-    switch (criteria) {
-      case 'newest':
-        sortedReviews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        break;
-      case 'highest':
-        sortedReviews.sort((a, b) => b.rating - a.rating);
-        break;
-      case 'lowest':
-        sortedReviews.sort((a, b) => a.rating - b.rating);
-        break;
-      default:
-        break;
-    }
-    setReviews(sortedReviews);
-  };
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`https://aviationx-be-1.onrender.com/api/v1/product/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch product');
+        }
+        const data = await response.json();
+        setProduct(data.products);
+        setSelectedImage(data.products.thumbnail);
+      } catch (err) {
+        setError(
+          `Error loading product details: ${err instanceof Error ? err.message : String(err)}`
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  }
+
+  if (error || !product) {
+    return <div className="text-red-500 text-center">{error}</div>;
+  }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Product Images */}
-        <div>
+    <div>
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
-            <img
-              src={selectedImage || '/placeholder.svg'}
-              alt={name}
-              className="w-[30rem] h-[30rem] "
-            />
-          </div>
-        </div>
-
-        {/* Product Info */}
-        <div>
-          <h1 className="text-3xl font-extrabold text-gray-900">{name}</h1>
-          <p className="mt-4 text-3xl text-gray-900">${price.toLocaleString()}</p>
-
-          <div className="mt-6 grid grid-cols-2 gap-4">
-            {Object.entries(generalInfo).map(([key, value]) => (
-              <div key={key} className="flex items-center">
-                {key === 'Type' && <Plane className="h-5 w-5 mr-2 text-blue-500" />}
-                {key === 'Range' && <Clock className="h-5 w-5 mr-2 text-blue-500" />}
-                {key === 'Capacity' && <Users className="h-5 w-5 mr-2 text-blue-500" />}
-                {key === 'Hourly Rate' && <DollarSign className="h-5 w-5 mr-2 text-blue-500" />}
-                <span className="text-sm text-gray-500">
-                  {key}: <span className="font-medium text-gray-900">{value}</span>
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6">
-            <h3 className="text-sm font-medium text-gray-900">Description</h3>
-            <p className="mt-2 text-sm text-gray-500">{description}</p>
-          </div>
-
-          <Tabs defaultValue="specifications" className="mt-6">
-            <TabsList>
-              <TabsTrigger value="specifications">Specifications</TabsTrigger>
-              <TabsTrigger value="features">Features</TabsTrigger>
-            </TabsList>
-            <TabsContent value="specifications">
-              <dl className="mt-4 border-t border-b border-gray-200 divide-y divide-gray-200">
-                {Object.entries(specifications).map(([key, value]) => (
-                  <div key={key} className="py-3 flex justify-between text-sm">
-                    <dt className="text-gray-500">{key}</dt>
-                    <dd className="text-gray-900 font-medium">{value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </TabsContent>
-            <TabsContent value="features">
-              <ul className="mt-4 list-disc pl-5 space-y-2">
-                <li>Advanced avionics suite for enhanced situational awareness</li>
-                <li>Spacious cabin with luxurious seating and ample headroom</li>
-                <li>Fuel-efficient engines for extended range and lower operating costs</li>
-                <li>State-of-the-art entertainment system for passenger comfort</li>
-              </ul>
-            </TabsContent>
-          </Tabs>
-
-          <Button className="mt-8 w-full bg-blue-600 hover:bg-blue-700">Request a Quote</Button>
-        </div>
-      </div>
-
-      {/* Reviews Section */}
-      <div className="mt-16">
-        <h2 className="text-2xl font-bold text-gray-900">Customer Reviews</h2>
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <p className="text-sm text-gray-500">{reviews.length} reviews</p>
-            <div className="ml-4 flex">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`h-5 w-5 ${
-                    star <=
-                    Math.round(
-                      reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
-                    )
-                      ? 'text-yellow-400'
-                      : 'text-gray-300'
-                  }`}
+            <div className="mb-4 border border-gray-200">
+              <img
+                src={selectedImage}
+                alt={product.productName}
+                className="w-full h-[30rem] object-cover rounded-lg"
+              />
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {product.image.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`${product.productName} ${index + 1}`}
+                  className="w-full h-24 object-cover rounded cursor-pointer border border-gray-200 p-2"
+                  onClick={() => setSelectedImage(img)}
                 />
               ))}
             </div>
           </div>
-          <Select onValueChange={sortReviews}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Sort reviews" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Newest</SelectItem>
-              <SelectItem value="highest">Highest Rated</SelectItem>
-              <SelectItem value="lowest">Lowest Rated</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="mt-8 space-y-8">
-          {reviews.map((review) => (
-            <Card key={review.id}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <p className="font-semibold">{review.author}</p>
-                  <p className="text-sm text-gray-500">{review.date}</p>
-                </div>
-                <div className="flex items-center mt-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`h-4 w-4 ${star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                    />
-                  ))}
-                </div>
-                <p className="mt-4 text-sm text-gray-600">{review.content}</p>
-              </CardContent>
-            </Card>
-          ))}
+
+          {/* Product Info */}
+          <div>
+            <div className="mb-4">
+              <span className="text-sm text-gray-500">SKU: {product.sku}</span>
+              <h1 className="text-3xl font-bold text-gray-900 mt-1">{product.productName}</h1>
+            </div>
+
+            {/* <div className="flex items-center  mb-6">
+              <span className="text-3xl font-bold">&#8377; {product.price.toLocaleString()}</span>
+            </div> */}
+
+            <Tabs defaultValue="details" className="mt-6">
+              <TabsList>
+                <TabsTrigger value="details">Product Details</TabsTrigger>
+                <TabsTrigger value="specifications">Specifications</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="details">
+                <Card>
+                  <CardContent className="pt-6">
+                    <p className="text-gray-600">{product.description}</p>
+                    <div className="mt-4 space-y-2">
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold">Manufacturer:</span>{' '}
+                        {product.Manufacturer.name}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold">Category:</span> {product.Category.name}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold">Part Number:</span> {product.partNumber}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="specifications">
+                <Card>
+                  <CardContent className="pt-6">
+                    <dl className="space-y-4">
+                      <div className="flex justify-between">
+                        <dt className="text-sm font-medium text-gray-500">Pack Size</dt>
+                        <dd className="text-sm text-gray-900">{product.packSize}</dd>
+                      </div>
+                      <div className="flex justify-between">
+                        <dt className="text-sm font-medium text-gray-500">Shelf Life</dt>
+                        <dd className="text-sm text-gray-900">{product.shelfLife}</dd>
+                      </div>
+                      <div className="flex justify-between">
+                        <dt className="text-sm font-medium text-gray-500">Quantity Available</dt>
+                        <dd className="text-sm text-gray-900">{product.quantity} units</dd>
+                      </div>
+                    </dl>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+
+            <div className="mt-8 space-y-4">
+              <Button className="w-full bg-blue-600 hover:bg-blue-700">Add to Cart</Button>
+              <Button variant="outline" className="w-full">
+                Request Quote
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

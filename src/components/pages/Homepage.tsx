@@ -1,11 +1,11 @@
 import Header from '../organisms/Header';
 import Footer from '../organisms/Footer';
 
-import { CarouselTwo } from '../organisms/CaraouselTwo';
-import { CarouselThree } from '../organisms/CaraouselThree';
 import { CarouselFour } from '../organisms/CaraouselFour';
 import NotificationBar from '../atoms/NotificationBar';
 import CaraouselOne from '../organisms/CaraouselOne';
+import CarouselTwo from '../organisms/CaraouselTwo';
+import CarouselThree from '../organisms/CaraouselThree';
 
 const Homepage = () => {
   return (

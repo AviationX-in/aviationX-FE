@@ -7,9 +7,13 @@ const Footer = () => {
       <div className="w-[90%] mx-auto flex justify-between items-start py-4">
         <div className="">
           <h1 className="text-lg font-bold">AviationX.in</h1>
+          <h1>Registered Office Address: </h1>
           <p className="py-4 text-md">
-            Devanahalli, Bangalore, <br />
-            Karnataka, India
+            7/28 U Block, In Front of DLF Phase III Metro Station, <br />
+            Gurugram, Haryana - 122002, India <br />
+            GSTIN/UIN: 06ABRFA7820N1ZW <br />
+            Karnataka, India <br />
+            Telephone : +91 8088867130
           </p>
         </div>
         <div className="">
