@@ -16,6 +16,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '../molecules/accordion';
+import axios from 'axios';
 
 // Create a custom auth context/hook
 const useAuth = () => {
@@ -24,6 +25,20 @@ const useAuth = () => {
   const navigate = useNavigate();
 
   React.useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profile = await axios.get('http://localhost:8000/api/v1/auth/profile', {
+          headers: {
+            'With-Credentials': 'false',
+          },
+        });
+        console.log(profile);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    fetchProfile();
     // Check if token exists in localStorage
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');

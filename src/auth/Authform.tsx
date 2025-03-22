@@ -16,9 +16,15 @@ import {
 } from '@/components/molecules/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/molecules/avatar';
 import { loginSchema, loginSchemaType, signupSchema, signupSchemaType } from '@/schema/Authschema';
+import axios from 'axios';
+const API_BASE_URL = 'http://localhost:8000/api/v1';
+
+// http: http: axios.defaults.withCredentials = true;
 
 const AuthForms = () => {
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  // const navigate = useNavigate();
 
   const {
     register: registerLogin,
@@ -37,37 +43,60 @@ const AuthForms = () => {
   });
 
   const onSignup = async (data: signupSchemaType) => {
+    setLoading(true);
+    setError('');
+
     try {
-      const response = await fetch('https://aviationx-be-1.onrender.com/api/v1/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          'With-Credentials': 'true',
+        },
       });
-      if (!response.ok) throw new Error('Signup failed');
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unexpected error occurred');
+
+      if (response.status === 201) {
+        setError('');
+        alert('Account created successfully! You can now log in.');
+        document
+          .querySelector('[value="login"]')
+          ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       }
+    } catch (err: any) {
+      console.error('Signup error:', err);
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   const onLogin = async (data: loginSchemaType) => {
+    setLoading(true);
+    setError('');
+
     try {
-      const response = await fetch('https://aviationx-be-1.onrender.com/api/v1/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          'With-Credentials': 'true',
+        },
       });
-      if (!response.ok) throw new Error('Login failed');
-      // Handle successful login
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
+
+      // if (response.status === 200) {
+      //   window.location.href = 'http://localhost:5173';
+      // }
+    } catch (err: any) {
+      console.error('Login error:', err);
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
       } else {
-        setError('An unexpected error occurred');
+        setError('Login failed. Please check your credentials and try again.');
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,14 +119,14 @@ const AuthForms = () => {
                     </Avatar>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Welcome to Brand Name</p>
+                    <p>Welcome to AviationX</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
           </div>
           <CardHeader className="pt-16 text-center">
-            <h1 className="text-2xl font-bold tracking-tight">Welcome Back</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Welcome to AviationX</h1>
             <p className="text-sm text-muted-foreground">Sign in to your account to continue</p>
           </CardHeader>
           <CardContent>
@@ -118,6 +147,7 @@ const AuthForms = () => {
                         placeholder="Enter your email"
                         {...registerLogin('email')}
                         className="w-full"
+                        disabled={loading}
                       />
                       {loginErrors.email && (
                         <p className="text-sm text-red-500">{loginErrors.email.message}</p>
@@ -131,13 +161,14 @@ const AuthForms = () => {
                         placeholder="Enter your password"
                         {...registerLogin('password')}
                         className="w-full"
+                        disabled={loading}
                       />
                       {loginErrors.password && (
                         <p className="text-sm text-red-500">{loginErrors.password.message}</p>
                       )}
                     </div>
-                    <Button type="submit" className="w-full">
-                      Login
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? 'Logging in...' : 'Login'}
                     </Button>
                   </form>
                 </TabsContent>
@@ -151,6 +182,7 @@ const AuthForms = () => {
                           placeholder="John"
                           {...registerSignup('firstName')}
                           className="w-full"
+                          disabled={loading}
                         />
                         {signupErrors.firstName && (
                           <p className="text-sm text-red-500">{signupErrors.firstName.message}</p>
@@ -163,6 +195,7 @@ const AuthForms = () => {
                           placeholder="Doe"
                           {...registerSignup('lastName')}
                           className="w-full"
+                          disabled={loading}
                         />
                         {signupErrors.lastName && (
                           <p className="text-sm text-red-500">{signupErrors.lastName.message}</p>
@@ -177,6 +210,7 @@ const AuthForms = () => {
                         placeholder="john@example.com"
                         {...registerSignup('email')}
                         className="w-full"
+                        disabled={loading}
                       />
                       {signupErrors.email && (
                         <p className="text-sm text-red-500">{signupErrors.email.message}</p>
@@ -190,6 +224,7 @@ const AuthForms = () => {
                         placeholder="Create a password"
                         {...registerSignup('password')}
                         className="w-full"
+                        disabled={loading}
                       />
                       {signupErrors.password && (
                         <p className="text-sm text-red-500">{signupErrors.password.message}</p>
@@ -203,13 +238,14 @@ const AuthForms = () => {
                         placeholder="+1 (555) 000-0000"
                         {...registerSignup('mobile')}
                         className="w-full"
+                        disabled={loading}
                       />
                       {signupErrors.mobile && (
                         <p className="text-sm text-red-500">{signupErrors.mobile.message}</p>
                       )}
                     </div>
-                    <Button type="submit" className="w-full">
-                      Create Account
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? 'Creating Account...' : 'Create Account'}
                     </Button>
                   </form>
                 </TabsContent>
