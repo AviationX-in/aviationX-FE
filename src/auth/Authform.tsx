@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/atoms/Input';
 import { Button } from '@/components/atoms/Button';
@@ -16,15 +17,21 @@ import {
 } from '@/components/molecules/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/molecules/avatar';
 import { loginSchema, loginSchemaType, signupSchema, signupSchemaType } from '@/schema/Authschema';
-import axios from 'axios';
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+import { api } from '../services/apiService';
 
-// http: http: axios.defaults.withCredentials = true;
+// Define a type for the response
+interface UserProfile {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
 
 const AuthForms = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const {
     register: registerLogin,
@@ -78,20 +85,19 @@ const AuthForms = () => {
     setError('');
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/login`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-          'With-Credentials': 'true',
-        },
-      });
+      const response = await api.post<{ message: string; user: UserProfile }>('/auth/login', data);
 
-      // if (response.status === 200) {
-      //   window.location.href = 'http://localhost:5173';
-      // }
+      console.log('Login successful:', response);
+
+      if (response.message === 'Authentication successful') {
+        console.log('anshu');
+        // Use navigate correctly - this should be a relative path or full URL
+        navigate('/'); // or navigate to dashboard or whatever your home route is
+      }
     } catch (err: any) {
       console.error('Login error:', err);
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
+      if (err && err.message) {
+        setError(err.message);
       } else {
         setError('Login failed. Please check your credentials and try again.');
       }

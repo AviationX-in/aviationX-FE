@@ -16,7 +16,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '../molecules/accordion';
-import axios from 'axios';
+import { api } from '../../services/apiService';
 
 // Create a custom auth context/hook
 const useAuth = () => {
@@ -27,11 +27,7 @@ const useAuth = () => {
   React.useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const profile = await axios.get('http://localhost:8000/api/v1/auth/profile', {
-          headers: {
-            'With-Credentials': 'false',
-          },
-        });
+        const profile = await api.get('/auth/profile');
         console.log(profile);
       } catch (error) {
         console.error('Error fetching profile:', error);
