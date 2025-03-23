@@ -9,7 +9,7 @@ import CarouselThree from '../organisms/CaraouselThree';
 
 const Homepage = () => {
   return (
-    <div className="flex flex-col min-h-[100vh] w-full">
+    <div className="flex flex-col min-h-[100vh] w-full overflow-x-hidden">
       <Header />
       <NotificationBar />
       <CaraouselOne />

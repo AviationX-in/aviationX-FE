@@ -1,4 +1,10 @@
+import ProductTable from '../molecules/adminproducttable';
+
 const Inventory = () => {
-  return <div>Inventory</div>;
+  return (
+    <div>
+      <ProductTable />
+    </div>
+  );
 };
 export default Inventory;

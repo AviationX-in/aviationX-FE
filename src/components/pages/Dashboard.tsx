@@ -1,4 +1,4 @@
-import { Wallet, IndianRupee } from 'lucide-react';
+import { IndianRupee } from 'lucide-react';
 import DataCardAdmin from '../molecules/DataCardAdmin';
 import SalesIcon from '../../assets/icons/sales.svg';
 import RevenueIcon from '../../assets/icons/revenue.svg';

@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface DataItem {
   icon: string;
   label: string;
