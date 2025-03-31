@@ -6,10 +6,12 @@ import AdminLayout from './components/layout/AdminLayout';
 import AuthForms from './auth/Authform';
 import CategoryPage from './components/pages/Categorypage';
 import Inventory from './components/pages/Inventory';
+import { Cart } from './components/organisms/Cart';
+import { CartProvider } from './hooks/Cart-contextprovider';
 
 const App = () => {
   return (
-    <>
+    <CartProvider>
       <Routes>
         <Route index element={<Homepage />} />
         <Route path="/auth" element={<AuthForms />} />
@@ -22,8 +24,9 @@ const App = () => {
           <Route path="orders" element={<Dashboard />} />
           <Route path="settings" element={<Dashboard />} />
         </Route>
+        <Route path="/cart" element={<Cart />} />
       </Routes>
-    </>
+    </CartProvider>
   );
 };
 

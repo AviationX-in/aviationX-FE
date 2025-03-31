@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../organisms/table';
 import {
   Pagination,
@@ -44,37 +44,52 @@ interface Product {
   Manufacturer: Manufacturer;
 }
 
+interface PaginationInfo {
+  totalProducts: number;
+  totalPages: number;
+  currentPage: number;
+  limit: number;
+}
+
 interface ProductsResponse {
   products: Product[];
+  pagination: PaginationInfo;
 }
 
 const ProductTable = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(5);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('Sealant');
   const [openPopover, setOpenPopover] = useState(false);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `https://aviationx-be-1.onrender.com/api/v1/product/${selectedCategory}/all`
+        `http://localhost:8000/api/v1/product/${selectedCategory}/all?page=${currentPage}&limit=${limit}`
       );
       const data: ProductsResponse = await response.json();
       setProducts(data.products);
+
+      // Update pagination information from the API response
+      if (data.pagination) {
+        setTotalPages(data.pagination.totalPages);
+        setCurrentPage(data.pagination.currentPage);
+      }
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCategory, currentPage, limit]);
 
   useEffect(() => {
     fetchProducts();
-  }, [currentPage, selectedCategory]);
+  }, [fetchProducts]);
 
   const getStockStatus = (quantity: number) => {
     if (quantity <= 0) return { label: 'Out of stock', color: 'text-red-500' };
@@ -90,20 +105,27 @@ const ProductTable = () => {
   // Handle page changes
   const handlePreviousPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      setCurrentPage((prevPage) => prevPage - 1);
     }
   };
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+      setCurrentPage((prevPage) => prevPage + 1);
     }
   };
 
   // Handle category selection
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
+    setCurrentPage(1); // Reset to first page when changing category
     setOpenPopover(false);
+  };
+
+  // Handle limit change (items per page)
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setCurrentPage(1); // Reset to first page when changing limit
   };
 
   return (
@@ -158,6 +180,18 @@ const ProductTable = () => {
               </Command>
             </PopoverContent>
           </Popover>
+
+          {/* Items per page selector */}
+          <select
+            className="border rounded-md px-2 py-2"
+            value={limit}
+            onChange={(e) => handleLimitChange(Number(e.target.value))}
+          >
+            <option value="5">5 per page</option>
+            <option value="9">9 per page</option>
+            <option value="15">15 per page</option>
+            <option value="20">20 per page</option>
+          </select>
 
           {/* Add Product button */}
           <button
@@ -219,7 +253,15 @@ const ProductTable = () => {
         </Table>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 flex items-center justify-between">
+        <div>
+          {!loading && products.length > 0 && (
+            <span className="text-sm text-gray-500">
+              Showing page {currentPage} of {totalPages}
+            </span>
+          )}
+        </div>
+
         <Pagination>
           <PaginationContent>
             <PaginationItem>
@@ -229,11 +271,36 @@ const ProductTable = () => {
               />
             </PaginationItem>
 
-            <PaginationItem>
-              <span className="px-4">
-                Page {currentPage} of {totalPages}
-              </span>
-            </PaginationItem>
+            {/* Add page numbers */}
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              // Show 5 pages max centered around current page
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+
+              if (pageNum > 0 && pageNum <= totalPages) {
+                return (
+                  <PaginationItem key={pageNum}>
+                    <button
+                      className={`px-3 py-1 rounded-md ${
+                        currentPage === pageNum ? 'bg-blue-100 font-medium' : ''
+                      }`}
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </button>
+                  </PaginationItem>
+                );
+              }
+              return null;
+            })}
 
             <PaginationItem>
               <PaginationNext

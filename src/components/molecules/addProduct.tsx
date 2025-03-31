@@ -77,7 +77,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           title: 'Error',
           description: 'You can upload a maximum of 5 images',
         });
-        // Reset the file input
+
         e.target.value = '';
         return;
       }
@@ -122,21 +122,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         throw new Error(errorData.message || 'Failed to create product');
       }
 
-      //   const result = await response.json();
-
       toast({
         title: 'Product Added',
         description: 'Your product has been successfully added',
       });
 
-      // Reset form
       form.reset();
       setSelectedFiles(null);
 
-      // Close modal
       onOpenChange(false);
-
-      // Refresh product list if callback provided
       if (onProductAdded) {
         onProductAdded();
       }

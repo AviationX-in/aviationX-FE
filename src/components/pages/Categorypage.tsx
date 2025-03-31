@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useSearchParams } from 'react-router';
 import { Link, useNavigate } from 'react-router';
 import React from 'react';
@@ -70,7 +70,7 @@ const CategoryPage = () => {
   const initialMinPrice = parseInt(searchParams.get('min_price') || '0');
   const initialMaxPrice = parseInt(searchParams.get('max_price') || '5000');
   const initialBrands = searchParams.get('brands') || '';
-  const initialRating = searchParams.get('rating') || '';
+  // const initialRating = searchParams.get('rating') || '';
   const initialLimit = parseInt(searchParams.get('limit') || '9');
   const initialSort = searchParams.get('sort') || 'popularity';
   const initialShowInStock = searchParams.get('in_stock') === 'true';
@@ -87,7 +87,7 @@ const CategoryPage = () => {
   const [availableBrands, setAvailableBrands] = useState<string[]>([]);
 
   // Update URL params when filters change
-  const updateUrlParams = () => {
+  const updateUrlParams = useCallback(() => {
     const params: Record<string, string> = {};
 
     if (currentPage !== 1) params.page = currentPage.toString();
@@ -99,26 +99,27 @@ const CategoryPage = () => {
     if (itemsPerPage !== 9) params.limit = itemsPerPage.toString();
 
     setSearchParams(params);
-  };
+  }, [currentPage, priceRange, selectedBrands, sortBy, showInStock, itemsPerPage, setSearchParams]);
 
   // Apply filters and fetch data
+  useEffect(() => {
+    setError(null);
+    setLoading(true);
+    setCurrentPage(1);
+  }, [category]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      let url = `https://aviationx-be-1.onrender.com/api/v1/product/${category}/all?`;
+      let url = `http://localhost:8000/api/v1/product/${category}/all?`;
       url += `page=${currentPage}&limit=${itemsPerPage}`;
 
-      // Add price filter
       if (priceRange[0] > 0) url += `&min_price=${priceRange[0]}`;
       if (priceRange[1] < 5000) url += `&max_price=${priceRange[1]}`;
 
-      // Add brand filter
       if (selectedBrands.length > 0) url += `&brands=${selectedBrands.join(',')}`;
       if (showInStock) url += `&in_stock=true`;
 
-      // Add sorting (assuming backend has this filter)
-      // Note: Your controller doesn't seem to have sorting functionality, so you'd need to add it
       if (sortBy) {
         let sortParam = '';
         switch (sortBy) {
@@ -154,11 +155,21 @@ const CategoryPage = () => {
       setError(err instanceof Error ? err.message : 'Failed to fetch products');
       setLoading(false);
     }
-  };
+  }, [category, currentPage, itemsPerPage, priceRange, selectedBrands, showInStock, sortBy]);
   useEffect(() => {
     updateUrlParams();
     fetchProducts();
-  }, [category, priceRange, selectedBrands, currentPage, itemsPerPage, sortBy, showInStock]);
+  }, [
+    category,
+    priceRange,
+    selectedBrands,
+    currentPage,
+    itemsPerPage,
+    sortBy,
+    showInStock,
+    fetchProducts,
+    updateUrlParams,
+  ]);
 
   // Handle pagination change
   const handlePageChange = (page: number) => {
@@ -244,7 +255,7 @@ const CategoryPage = () => {
                     {categories.map((cat) => (
                       <div key={cat.name} className="flex items-center">
                         <Link
-                          to={`/category/${cat.name.toLowerCase()}`}
+                          to={`/category/${cat.name}`}
                           className={`flex items-center ml-2 text-sm ${
                             category === cat.name.toLowerCase() ? 'font-bold text-blue-600' : ''
                           }`}

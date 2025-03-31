@@ -54,26 +54,18 @@ const AuthForms = () => {
     setError('');
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/register`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-          'With-Credentials': 'true',
-        },
-      });
+      const response = await api.post<{ message: string; user: UserProfile }>('/auth/login', data);
+      console.log('Login successful:', response);
 
-      if (response.status === 201) {
-        setError('');
-        alert('Account created successfully! You can now log in.');
-        document
-          .querySelector('[value="login"]')
-          ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      if (response.message === 'Authentication successful') {
+        console.log('anshu');
+        navigate('/');
       }
-    } catch (err: any) {
-      console.error('Signup error:', err);
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
+    } catch (err: Error | unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
-        setError('Registration failed. Please try again.');
+        setError('Registeration failed. Please check all the fields.');
       }
     } finally {
       setLoading(false);
@@ -90,13 +82,10 @@ const AuthForms = () => {
       console.log('Login successful:', response);
 
       if (response.message === 'Authentication successful') {
-        console.log('anshu');
-        // Use navigate correctly - this should be a relative path or full URL
-        navigate('/'); // or navigate to dashboard or whatever your home route is
+        navigate('/');
       }
-    } catch (err: any) {
-      console.error('Login error:', err);
-      if (err && err.message) {
+    } catch (err: Error | unknown) {
+      if (err instanceof Error) {
         setError(err.message);
       } else {
         setError('Login failed. Please check your credentials and try again.');

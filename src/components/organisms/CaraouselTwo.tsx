@@ -39,9 +39,7 @@ const CarouselTwo: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(
-          'https://aviationx-be-1.onrender.com/api/v1/product/Sealant/all'
-        );
+        const response = await fetch('http://localhost:8000/api/v1/product/Sealant/all');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -92,7 +90,7 @@ const CarouselTwo: React.FC = () => {
             <CarouselContent className="-ml-2 flex">
               {products.map((product) => (
                 <CarouselItem
-                  key={product.partNumber}
+                  key={product.id}
                   className="pl-2 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
                 >
                   <article className="relative flex flex-col overflow-hidden rounded-lg border product-card h-full">

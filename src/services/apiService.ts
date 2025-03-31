@@ -36,7 +36,6 @@ const apiRequest = async <T>(
   params?: Record<string, string>
 ): Promise<T> => {
   try {
-    // Fetch CSRF token before modifying state
     if (['post', 'put', 'delete'].includes(method)) {
       await getCsrfToken();
     }
@@ -58,6 +57,8 @@ const apiRequest = async <T>(
     throw error.response ? error.response.data : error;
   }
 };
+
+
 
 // API wrapper object
 export const api = {

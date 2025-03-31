@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AlignJustify, Heart, Search, ShoppingCart, LogOut, Menu } from 'lucide-react';
 import { Link } from 'react-router';
 import { Input } from '../atoms/Input';
@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router';
 import { Sheet, SheetContent, SheetTrigger } from '../molecules/sheet';
 import { Button } from '../atoms/Button';
 import { Avatar, AvatarFallback } from '../molecules/avatar';
-import { Badge } from '../atoms/badge';
+
 import {
   Accordion,
   AccordionContent,
@@ -17,32 +17,28 @@ import {
   AccordionTrigger,
 } from '../molecules/accordion';
 import { api } from '../../services/apiService';
+import { CartIcon } from '../molecules/CartIcon';
 
 // Create a custom auth context/hook
 const useAuth = () => {
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
-  const [user, setUser] = React.useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   React.useEffect(() => {
     const fetchProfile = async () => {
       try {
         const profile = await api.get('/auth/profile');
-        console.log(profile);
+        if (profile) {
+          setIsAuthenticated(true);
+        }
+        // console.log(profile);
       } catch (error) {
         console.error('Error fetching profile:', error);
       }
     };
 
     fetchProfile();
-    // Check if token exists in localStorage
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-
-    if (token && userData) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(userData));
-    }
   }, []);
 
   const logout = () => {
@@ -209,10 +205,6 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-1 md:gap-3">
-          {/* <Button variant="ghost" size="icon" className="md:hidden">
-            <Search className="h-5 w-5" />
-          </Button> */}
-
           <TooltipProvider>
             <div className="hidden md:flex items-center gap-3">
               {isAuthenticated ? (
@@ -236,9 +228,11 @@ const Header = () => {
                   </Tooltip>
                 </div>
               ) : (
-                <Button variant="secondary" size="sm" onClick={() => navigate('/auth')}>
-                  Sign in
-                </Button>
+                <div>
+                  <Button variant="secondary" size="sm" onClick={() => navigate('/auth')}>
+                    Sign in
+                  </Button>
+                </div>
               )}
             </div>
           </TooltipProvider>
@@ -261,12 +255,7 @@ const Header = () => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative">
-                    <ShoppingCart size={20} />
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0">
-                      2
-                    </Badge>
-                  </Button>
+                  <CartIcon />
                 </TooltipTrigger>
                 <TooltipContent>Cart</TooltipContent>
               </Tooltip>
