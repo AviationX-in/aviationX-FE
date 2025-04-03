@@ -37,6 +37,7 @@ export const categories = [
   { name: 'Grease' },
   { name: 'Sealant' },
   { name: 'Contact Cleaner' },
+  {name: 'Air Filter'},
 ];
 
 export const brands = [

@@ -19,10 +19,14 @@ import {
   FormLabel,
   FormMessage,
 } from '../organisms/form';
+
 import { Input } from '../atoms/Input';
 import { Textarea } from '../atoms/textarea';
 import { Button } from '../atoms/Button';
 import { toast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
+import { categories } from '@/utils/data/product';
+
 // Define the validation schema with Zod
 const productSchema = z.object({
   sku: z.string().min(1, 'SKU is required'),
@@ -286,15 +290,31 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             </div>
 
             <div className="grid grid-cols-2 gap-4">
+              {/* Updated Category field with Select component */}
               <FormField
                 control={form.control}
                 name="category"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Category name" {...field} />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem
+                            key={category.name}
+                            value={category.name}
+                            className="cursor-pointer"
+                          >
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

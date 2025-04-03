@@ -30,7 +30,7 @@ export interface CartContextType {
   loading: boolean;
   addToCart: (productId: string, quantity: number) => Promise<void>;
   removeFromCart: (itemId: string) => Promise<void>;
-  updateQuantity: (itemId: string, productId: string, quantity: number) => Promise<void>;
+  updateQuantity: (itemId: string, quantity: number) => Promise<void>;
   clearCart: () => void;
 }
 
@@ -121,7 +121,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const updateQuantity = async (itemId: string, productId: string, quantity: number) => {
+  const updateQuantity = async (itemId: string, quantity: number) => {
     try {
       await api.put('cart/updateQuantity', { itemId, quantity });
       setCartItems((prevItems) =>
